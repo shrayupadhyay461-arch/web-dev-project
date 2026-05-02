@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreelancerGo</title>
+  <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/animation.css">
+</head>
+<body>
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+  <div class="bg-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <nav class="navbar">
+    <div class="logo">🚀 FreelancerGo</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="post-skill.html">Post a Skill</a></li>
+      <li><a href="favorites.html">Favorites</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content floating">
+      <h1>Find Skilled Freelancers</h1>
+      <p>Hire talented people or sell your own skills</p>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search a skill... e.g. Logo Design">
+        <button id="search-btn">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="categories">
+    <button class="cat-btn active" data-category="all">All</button>
+    <button class="cat-btn" data-category="design">Design</button>
+    <button class="cat-btn" data-category="coding">Coding</button>
+    <button class="cat-btn" data-category="writing">Writing</button>
+    <button class="cat-btn" data-category="marketing">Marketing</button>
+    <button class="cat-btn" data-category="video">Video</button>
+  </section>
+
+  <section class="skills-section">
+    <h2>Browse Skills</h2>
+    <div class="skills-grid" id="skills-grid">
+
+      <div class="skill-card" data-category="design">
+        <div class="card-top">
+          <img src="https://placehold.co/60x60" alt="freelancer" class="avatar">
+          <div>
+            <h3>Logo Design</h3>
+            <span class="category-tag">Design</span>
+          </div>
+        </div>
+        <p class="card-desc">I will create a professional logo for your brand within 2 days.</p>
+        <div class="card-footer">
+          <span class="price">₹500</span>
+          <a href="profile.html" class="btn">View Profile</a>
+        </div>
+      </div>
+
+      <div class="skill-card" data-category="coding">
+        <div class="card-top">
+          <img src="https://placehold.co/60x60" alt="freelancer" class="avatar">
+          <div>
+            <h3>React Website</h3>
+            <span class="category-tag">Coding</span>
+          </div>
+        </div>
+        <p class="card-desc">I will build a responsive React website for your business.</p>
+        <div class="card-footer">
+          <span class="price">₹1500</span>
+          <a href="profile.html" class="btn">View Profile</a>
+        </div>
+      </div>
+
+      <div class="skill-card" data-category="writing">
+        <div class="card-top">
+          <img src="https://placehold.co/60x60" alt="freelancer" class="avatar">
+          <div>
+            <h3>Blog Writing</h3>
+            <span class="category-tag">Writing</span>
+          </div>
+        </div>
+        <p class="card-desc">I will write SEO friendly blog posts for your website.</p>
+        <div class="card-footer">
+          <span class="price">₹300</span>
+          <a href="profile.html" class="btn">View Profile</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Made by Shray Upadhyay &amp; Sanskar Patil · Rishihood University 2026</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
