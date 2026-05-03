@@ -1,4 +1,5 @@
 
+
 const BIN_ID = '69f719f0aaba88219766a7e4';
 const API_KEY = '$2a$10$hvFoAlEuUcVtZHxhD3hh1OhZY4EayfnpbLtHYoQbPjdc58UhVBxh2';
 const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
@@ -142,15 +143,25 @@ async function handlePostSkill(e) {
 
   if (!valid) return;
 
-  const newSkill = { id: Date.now(), name, title, category, desc, price: parseInt(price) };
-
   try {
-    skills.push(newSkill);
+    // Fetch existing skills first
+    const getResponse = await fetch(BASE_URL + '/latest', {
+      headers: { 'X-Master-Key': API_KEY }
+    });
+    const getData = await getResponse.json();
+    const existingSkills = getData.record;
+
+    // Add new skill
+    const newSkill = { id: Date.now(), name, title, category, desc, price: parseInt(price) };
+    existingSkills.push(newSkill);
+
+    // Save back to JSONBin
     await fetch(BASE_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-      body: JSON.stringify(skills)
+      body: JSON.stringify(existingSkills)
     });
+
     alert(`Your skill "${title}" has been posted! 🚀`);
     window.location.href = 'index.html';
   } catch (error) {
