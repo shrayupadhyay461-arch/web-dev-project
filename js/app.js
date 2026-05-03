@@ -27,6 +27,16 @@ let skills = [];
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
 async function fetchSkills() {
+  const grid = document.getElementById('skills-grid');
+  if (grid) {
+    grid.innerHTML = `
+      <div class="spinner-container">
+        <div class="spinner"></div>
+        <p class="spinner-text">Finding freelancers for you...</p>
+      </div>
+    `;
+  }
+
   try {
     const response = await fetch(BASE_URL + '/latest', {
       headers: { 'X-Master-Key': API_KEY }
@@ -34,8 +44,16 @@ async function fetchSkills() {
     const data = await response.json();
     skills = data.record;
     renderSkills(skills);
+    updateSkillCount(skills.length);
   } catch (error) {
     console.error('Error fetching skills:', error);
+    if (grid) grid.innerHTML = '<p class="empty-state">Failed to load skills. Please refresh!</p>';
+  }
+}
+function updateSkillCount(count) {
+  const countEl = document.getElementById('skill-count');
+  if (countEl) {
+    countEl.innerHTML = `Showing <span>${count}</span> skill${count !== 1 ? 's' : ''}`;
   }
 }
 
@@ -47,6 +65,7 @@ function renderSkills(list) {
     grid.innerHTML = '<p class="empty-state">No skills found!</p>';
     return;
   }
+  updateSkillCount(list.length);
   list.forEach(skill => {
     const card = document.createElement('div');
     card.className = 'skill-card';
