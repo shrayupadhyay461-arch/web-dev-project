@@ -4,28 +4,22 @@ const BIN_ID = '69f719f0aaba88219766a7e4';
 const API_KEY = '$2a$10$hvFoAlEuUcVtZHxhD3hh1OhZY4EayfnpbLtHYoQbPjdc58UhVBxh2';
 const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-// ===== TOAST NOTIFICATION =====
+// ===== TOAST =====
 function showToast(message, type = 'success') {
   const existing = document.querySelector('.toast');
   if (existing) existing.remove();
-
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.textContent = message;
   document.body.appendChild(toast);
-
   setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
+  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
 }
 
 let skills = [];
-
-
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
+// ===== FETCH SKILLS =====
 async function fetchSkills() {
   const grid = document.getElementById('skills-grid');
   if (grid) {
@@ -33,10 +27,8 @@ async function fetchSkills() {
       <div class="spinner-container">
         <div class="spinner"></div>
         <p class="spinner-text">Finding freelancers for you...</p>
-      </div>
-    `;
+      </div>`;
   }
-
   try {
     const response = await fetch(BASE_URL + '/latest', {
       headers: { 'X-Master-Key': API_KEY }
@@ -46,17 +38,18 @@ async function fetchSkills() {
     renderSkills(skills);
     updateSkillCount(skills.length);
   } catch (error) {
-    console.error('Error fetching skills:', error);
-    if (grid) grid.innerHTML = '<p class="empty-state">Failed to load skills. Please refresh!</p>';
-  }
-}
-function updateSkillCount(count) {
-  const countEl = document.getElementById('skill-count');
-  if (countEl) {
-    countEl.innerHTML = `Showing <span>${count}</span> skill${count !== 1 ? 's' : ''}`;
+    console.error('Error:', error);
+    if (grid) grid.innerHTML = '<p class="empty-state">Failed to load. Please refresh!</p>';
   }
 }
 
+// ===== UPDATE COUNT =====
+function updateSkillCount(count) {
+  const countEl = document.getElementById('skill-count');
+  if (countEl) countEl.innerHTML = `Showing <span>${count}</span> skill${count !== 1 ? 's' : ''}`;
+}
+
+// ===== RENDER SKILLS =====
 function renderSkills(list) {
   const grid = document.getElementById('skills-grid');
   if (!grid) return;
@@ -80,7 +73,6 @@ function renderSkills(list) {
       </div>
       <p class="card-desc">${skill.desc}</p>
       <div class="card-footer">
-      <button class="btn" onclick="saveToFavorites
         <span class="price">₹${skill.price}</span>
         <div style="display:flex; gap:8px;">
           <button class="btn" onclick="saveToFavorites(${skill.id})">❤️</button>
@@ -93,6 +85,7 @@ function renderSkills(list) {
   });
 }
 
+// ===== SEARCH =====
 function handleSearch() {
   const query = document.getElementById('search-input').value.toLowerCase();
   const filtered = skills.filter(skill =>
@@ -103,6 +96,7 @@ function handleSearch() {
   renderSkills(filtered);
 }
 
+// ===== FILTER =====
 function handleFilter(category) {
   document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
@@ -113,15 +107,17 @@ function handleFilter(category) {
   }
 }
 
+// ===== SAVE TO FAVORITES =====
 function saveToFavorites(id) {
   const skill = skills.find(s => s.id === id);
   const already = favorites.find(f => f.id === id);
-  if (already) { alert('Already in favorites!'); return; }
+  if (already) { showToast('Already in favorites!', 'error'); return; }
   favorites.push(skill);
   localStorage.setItem('favorites', JSON.stringify(favorites));
-  alert(`"${skill.title}" saved to favorites! ❤️`);
+  showToast(`"${skill.title}" saved to favorites! ❤️`);
 }
 
+// ===== RENDER FAVORITES =====
 function renderFavorites() {
   const grid = document.getElementById('favorites-grid');
   if (!grid) return;
@@ -155,30 +151,28 @@ function renderFavorites() {
   });
 }
 
+// ===== REMOVE FROM FAVORITES =====
 function removeFromFavorites(id) {
   favorites = favorites.filter(f => f.id !== id);
   localStorage.setItem('favorites', JSON.stringify(favorites));
   renderFavorites();
 }
-  // ===== DELETE SKILL =====
+
+// ===== DELETE SKILL =====
 async function deleteSkill(id) {
   if (!confirm('Are you sure you want to delete this skill?')) return;
-
   try {
     const getResponse = await fetch(BASE_URL + '/latest', {
       headers: { 'X-Master-Key': API_KEY }
     });
     const getData = await getResponse.json();
     const existingSkills = getData.record;
-
     const updated = existingSkills.filter(s => s.id !== id);
-
     await fetch(BASE_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
       body: JSON.stringify(updated)
     });
-
     skills = updated;
     renderSkills(skills);
     showToast('Skill deleted! 🗑️', 'error');
@@ -186,8 +180,8 @@ async function deleteSkill(id) {
     showToast('Failed to delete. Try again!', 'error');
   }
 }
-}
 
+// ===== POST SKILL =====
 async function handlePostSkill(e) {
   e.preventDefault();
   const name = document.getElementById('name').value.trim();
@@ -211,36 +205,56 @@ async function handlePostSkill(e) {
   if (!valid) return;
 
   try {
-    // Fetch existing skills first
     const getResponse = await fetch(BASE_URL + '/latest', {
       headers: { 'X-Master-Key': API_KEY }
     });
     const getData = await getResponse.json();
     const existingSkills = getData.record;
-
-    // Add new skill
     const newSkill = { id: Date.now(), name, title, category, desc, price: parseInt(price) };
     existingSkills.push(newSkill);
-
-    // Save back to JSONBin
     await fetch(BASE_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
       body: JSON.stringify(existingSkills)
     });
-
-    alert(`Your skill "${title}" has been posted! 🚀`);
-    window.location.href = 'index.html';
+    showToast(`Your skill "${title}" has been posted! 🚀`);
+    setTimeout(() => window.location.href = 'index.html', 1500);
   } catch (error) {
-    alert('Something went wrong. Please try again.');
+    showToast('Something went wrong. Please try again.', 'error');
   }
 }
 
+// ===== LOAD PROFILE =====
+async function loadProfile() {
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id'));
+  if (!id) return;
+  try {
+    const response = await fetch(BASE_URL + '/latest', {
+      headers: { 'X-Master-Key': API_KEY }
+    });
+    const data = await response.json();
+    const allSkills = data.record;
+    const skill = allSkills.find(s => s.id === id);
+    if (skill) {
+      document.getElementById('profile-name').textContent = skill.name;
+      document.getElementById('profile-category').textContent = skill.category;
+      document.getElementById('profile-desc').textContent = skill.desc;
+      document.getElementById('profile-price').textContent = '₹' + skill.price;
+      document.getElementById('profile-cat-label').textContent = skill.category;
+    }
+  } catch (error) {
+    console.error('Error loading profile:', error);
+  }
+}
+
+// ===== NAVBAR SCROLL =====
 window.addEventListener('scroll', () => {
   const navbar = document.querySelector('.navbar');
   if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 20);
 });
 
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('skills-grid')) {
     fetchSkills();
@@ -257,32 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('favorites-grid')) renderFavorites();
   const form = document.getElementById('post-skill-form');
   if (form) form.addEventListener('submit', handlePostSkill);
-});
-// Profile page
-if (document.getElementById('profile-name')) {
-  const params = new URLSearchParams(window.location.search);
-  const id = parseInt(params.get('id'));
-
-  async function loadProfile() {
-    const response = await fetch(BASE_URL + '/latest', {
-      headers: { 'X-Master-Key': API_KEY }
+  if (document.getElementById('profile-name')) {
+    loadProfile();
+    document.getElementById('fav-btn').addEventListener('click', () => {
+      showToast('Profile saved to favorites! ❤️');
     });
-    const data = await response.json();
-    const allSkills = data.record;
-    const skill = allSkills.find(s => s.id === id);
-
-    if (skill) {
-      document.getElementById('profile-name').textContent = skill.name;
-      document.getElementById('profile-category').textContent = skill.category;
-      document.getElementById('profile-desc').textContent = skill.desc;
-      document.getElementById('profile-price').textContent = '₹' + skill.price;
-      document.getElementById('profile-cat-label').textContent = skill.category;
-    }
   }
-
-  loadProfile();
-
-  document.getElementById('fav-btn').addEventListener('click', () => {
-    showToast('Profile saved to favorites! ❤️');
-  });
-}
+});
