@@ -159,6 +159,7 @@ function removeFromFavorites(id) {
   favorites = favorites.filter(f => f.id !== id);
   localStorage.setItem('favorites', JSON.stringify(favorites));
   renderFavorites();
+}
   // ===== DELETE SKILL =====
 async function deleteSkill(id) {
   if (!confirm('Are you sure you want to delete this skill?')) return;
