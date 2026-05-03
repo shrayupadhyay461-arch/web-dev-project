@@ -1,10 +1,29 @@
 
-
+// ===== API CONFIG =====
 const BIN_ID = '69f719f0aaba88219766a7e4';
 const API_KEY = '$2a$10$hvFoAlEuUcVtZHxhD3hh1OhZY4EayfnpbLtHYoQbPjdc58UhVBxh2';
 const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
+// ===== TOAST NOTIFICATION =====
+function showToast(message, type = 'success') {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => toast.classList.add('show'), 10);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
 let skills = [];
+
+
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
 async function fetchSkills() {
