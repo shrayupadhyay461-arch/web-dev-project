@@ -159,6 +159,32 @@ function removeFromFavorites(id) {
   favorites = favorites.filter(f => f.id !== id);
   localStorage.setItem('favorites', JSON.stringify(favorites));
   renderFavorites();
+  // ===== DELETE SKILL =====
+async function deleteSkill(id) {
+  if (!confirm('Are you sure you want to delete this skill?')) return;
+
+  try {
+    const getResponse = await fetch(BASE_URL + '/latest', {
+      headers: { 'X-Master-Key': API_KEY }
+    });
+    const getData = await getResponse.json();
+    const existingSkills = getData.record;
+
+    const updated = existingSkills.filter(s => s.id !== id);
+
+    await fetch(BASE_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+      body: JSON.stringify(updated)
+    });
+
+    skills = updated;
+    renderSkills(skills);
+    showToast('Skill deleted! 🗑️', 'error');
+  } catch (error) {
+    showToast('Failed to delete. Try again!', 'error');
+  }
+}
 }
 
 async function handlePostSkill(e) {
@@ -231,3 +257,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('post-skill-form');
   if (form) form.addEventListener('submit', handlePostSkill);
 });
+// Profile page
+if (document.getElementById('profile-name')) {
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id'));
+
+  async function loadProfile() {
+    const response = await fetch(BASE_URL + '/latest', {
+      headers: { 'X-Master-Key': API_KEY }
+    });
+    const data = await response.json();
+    const allSkills = data.record;
+    const skill = allSkills.find(s => s.id === id);
+
+    if (skill) {
+      document.getElementById('profile-name').textContent = skill.name;
+      document.getElementById('profile-category').textContent = skill.category;
+      document.getElementById('profile-desc').textContent = skill.desc;
+      document.getElementById('profile-price').textContent = '₹' + skill.price;
+      document.getElementById('profile-cat-label').textContent = skill.category;
+    }
+  }
+
+  loadProfile();
+
+  document.getElementById('fav-btn').addEventListener('click', () => {
+    showToast('Profile saved to favorites! ❤️');
+  });
+}
