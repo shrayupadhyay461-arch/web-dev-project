@@ -80,10 +80,12 @@ function renderSkills(list) {
       </div>
       <p class="card-desc">${skill.desc}</p>
       <div class="card-footer">
+      <button class="btn" onclick="saveToFavorites
         <span class="price">₹${skill.price}</span>
         <div style="display:flex; gap:8px;">
           <button class="btn" onclick="saveToFavorites(${skill.id})">❤️</button>
           <a href="profile.html?id=${skill.id}" class="btn">View</a>
+          <button class="btn btn-delete" onclick="deleteSkill(${skill.id})">🗑️</button>
         </div>
       </div>
     `;
